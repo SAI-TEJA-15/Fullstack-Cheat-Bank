@@ -1,33 +1,8 @@
 import React, { useContext, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { AppContext } from '../App';
-import { CheatSheet } from '../types';
 import { incrementDownload, incrementView } from '../services/apiService';
-
-const downloadAsMarkdown = (sheet: CheatSheet) => {
-    let content = `# ${sheet.title}\n\n`;
-    content += `> ${sheet.description}\n\n`;
-    content += `**Category:** ${sheet.category}\n`;
-    content += `**Author:** ${sheet.author.name}\n\n`;
-
-    sheet.content.forEach(section => {
-        content += `## ${section.title}\n\n`;
-        section.commands.forEach(cmd => {
-            content += `- \`${cmd.command}\` - ${cmd.description}\n`;
-        });
-        content += `\n`;
-    });
-
-    const blob = new Blob([content], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${sheet.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.md`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-};
+import { downloadCheatSheetAsPdf } from '../utils/pdfDownload';
 
 const CheatSheetDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -81,9 +56,9 @@ const CheatSheetDetail: React.FC = () => {
                                 incrementDownload(sheet.id).catch(error => {
                                     console.error('Failed to record download:', error);
                                 });
-                                downloadAsMarkdown(sheet);
+                                downloadCheatSheetAsPdf(sheet);
                             }} className="bg-primary hover:bg-primary-hover text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors">
-                                <i className="fa-solid fa-file-alt"></i> Download .MD
+                                <i className="fa-solid fa-file-pdf"></i> Download PDF
                             </button>
                             <button onClick={() => handleActionClick('Copy Content')} className="bg-surface hover:bg-surface-light text-text-primary font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors">
                                 <i className="fa-solid fa-copy"></i> Copy Content

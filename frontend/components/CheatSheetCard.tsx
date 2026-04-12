@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { CheatSheet } from '../types';
 import { AppContext } from '../App';
 import { incrementDownload } from '../services/apiService';
+import { downloadCheatSheetAsPdf } from '../utils/pdfDownload';
 
 interface CheatSheetCardProps {
   sheet: CheatSheet;
@@ -17,32 +18,6 @@ const categoryColors: { [key: string]: string } = {
   DevOps: 'bg-yellow-500/20 text-yellow-300 border-yellow-400/30',
   Tools: 'bg-indigo-500/20 text-indigo-300 border-indigo-400/30',
 };
-
-const downloadAsMarkdown = (sheet: CheatSheet) => {
-    let content = `# ${sheet.title}\n\n`;
-    content += `> ${sheet.description}\n\n`;
-    content += `**Category:** ${sheet.category}\n`;
-    content += `**Author:** ${sheet.author.name}\n\n`;
-
-    sheet.content.forEach(section => {
-        content += `## ${section.title}\n\n`;
-        section.commands.forEach(cmd => {
-            content += `- \`${cmd.command}\` - ${cmd.description}\n`;
-        });
-        content += `\n`;
-    });
-
-    const blob = new Blob([content], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${sheet.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.md`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-};
-
 
 const CheatSheetCard: React.FC<CheatSheetCardProps> = ({ sheet }) => {
   const { favorites, toggleFavorite } = useContext(AppContext);
@@ -60,7 +35,7 @@ const CheatSheetCard: React.FC<CheatSheetCardProps> = ({ sheet }) => {
     incrementDownload(sheet.id).catch(error => {
       console.error('Failed to record download:', error);
     });
-    downloadAsMarkdown(sheet);
+    downloadCheatSheetAsPdf(sheet);
   };
 
   const handleDeleteClick = (e: React.MouseEvent) => {
