@@ -49,6 +49,12 @@ Frontend `.env` in `frontend/.env`:
 VITE_API_URL=http://localhost:8080/api
 ```
 
+Frontend production `.env` in `frontend/.env.production`:
+
+```env
+VITE_API_URL=https://fullstack-cheat-bank-production.up.railway.app/api
+```
+
 Backend values are now set directly in [backend/src/main/resources/application.properties](/d:/sub-2/full%20stack(fsad)/projects/cheatbank(main)/CheatBank/backend/src/main/resources/application.properties):
 
 ```env
