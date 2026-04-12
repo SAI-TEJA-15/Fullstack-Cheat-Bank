@@ -45,7 +45,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/api/health").permitAll()
+                        .requestMatchers("/", "/api/auth/**", "/api/health").permitAll()
                         .requestMatchers("/api/cheat-sheets/pending").hasRole("ADMIN")
                         .requestMatchers("/api/cheat-sheets/*/approve", "/api/cheat-sheets/*/reject").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/cheat-sheets/*/view", "/api/cheat-sheets/*/download").permitAll()
