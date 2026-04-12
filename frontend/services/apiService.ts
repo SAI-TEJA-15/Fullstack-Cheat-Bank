@@ -23,7 +23,7 @@ export interface CreateCheatSheetPayload {
 }
 
 export const getToken = (): string | null => {
-  return localStorage.getItem('token');
+  return sessionStorage.getItem('token');
 };
 
 export const isAuthenticated = (): boolean => {
@@ -31,12 +31,12 @@ export const isAuthenticated = (): boolean => {
 };
 
 export const logout = (): void => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
+  sessionStorage.removeItem('token');
+  sessionStorage.removeItem('user');
 };
 
 export const getCurrentUserFromStorage = (): User | null => {
-  const userJson = localStorage.getItem('user');
+  const userJson = sessionStorage.getItem('user');
 
   if (!userJson) {
     return null;
@@ -102,15 +102,15 @@ export const loginUser = async (loginData: LoginFormData): Promise<{ token: stri
     body: JSON.stringify(loginData),
   });
 
-  localStorage.setItem('token', response.token);
-  localStorage.setItem('user', JSON.stringify(response.user));
+  sessionStorage.setItem('token', response.token);
+  sessionStorage.setItem('user', JSON.stringify(response.user));
 
   return response;
 };
 
 export const fetchCurrentUser = async (): Promise<User> => {
   const response = await apiRequest<{ user: User }>('/auth/me', { method: 'GET' }, true);
-  localStorage.setItem('user', JSON.stringify(response.user));
+  sessionStorage.setItem('user', JSON.stringify(response.user));
   return response.user;
 };
 
