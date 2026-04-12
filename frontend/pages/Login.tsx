@@ -94,7 +94,6 @@ const Login: React.FC = () => {
 
         <div className="auth-footer">
           <p>Don't have an account? <Link to="/register" className="auth-link">Create one</Link></p>
-          <p className="text-sm text-gray-300">Admin demo: <span className="font-semibold">admin@cheatbank.com / admin123</span></p>
         </div>
       </div>
     </div>
