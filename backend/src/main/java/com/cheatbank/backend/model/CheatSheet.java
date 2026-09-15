@@ -32,13 +32,13 @@ public class CheatSheet {
     @Column(nullable = false, length = 100)
     private String category;
 
-    @Column(nullable = false, columnDefinition = "JSON")
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String tags;
 
     @Column(name = "author_name", nullable = false, length = 100)
     private String authorName;
 
-    @Column(nullable = false, columnDefinition = "JSON")
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

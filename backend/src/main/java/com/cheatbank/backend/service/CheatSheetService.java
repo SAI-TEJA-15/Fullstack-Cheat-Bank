@@ -15,6 +15,8 @@ import com.cheatbank.backend.model.User;
 import com.cheatbank.backend.repository.CheatSheetRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,6 +24,8 @@ import java.util.List;
 
 @Service
 public class CheatSheetService {
+
+    private static final Logger logger = LoggerFactory.getLogger(CheatSheetService.class);
 
     private static final List<String> ALLOWED_CATEGORIES = List.of(
             "Development", "Programming", "Design", "System Admin", "Database", "DevOps", "Tools"
@@ -153,11 +157,21 @@ public class CheatSheetService {
     }
 
     private List<String> readTags(String json) {
-        return readJson(json, new TypeReference<List<String>>() {});
+        try {
+            return readJson(json, new TypeReference<List<String>>() {});
+        } catch (Exception exception) {
+            logger.warn("Failed to read stored cheat sheet tags JSON.", exception);
+            return List.of();
+        }
     }
 
     private List<SectionDto> readContent(String json) {
-        return readJson(json, new TypeReference<List<SectionDto>>() {});
+        try {
+            return readJson(json, new TypeReference<List<SectionDto>>() {});
+        } catch (Exception exception) {
+            logger.warn("Failed to read stored cheat sheet content JSON.", exception);
+            return List.of();
+        }
     }
 
     private <T> T readJson(String json, TypeReference<T> typeReference) {

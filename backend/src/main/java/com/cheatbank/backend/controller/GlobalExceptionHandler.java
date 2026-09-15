@@ -1,6 +1,8 @@
 package com.cheatbank.backend.controller;
 
 import com.cheatbank.backend.dto.AuthDtos.MessageResponse;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -34,6 +36,20 @@ public class GlobalExceptionHandler {
                 : HttpStatus.BAD_REQUEST;
 
         return ResponseEntity.status(status).body(new MessageResponse(exception.getMessage()));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<MessageResponse> handleDataIntegrity(DataIntegrityViolationException exception) {
+        exception.printStackTrace();
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new MessageResponse("That record conflicts with existing data."));
+    }
+
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<MessageResponse> handleDataAccess(DataAccessException exception) {
+        exception.printStackTrace();
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(new MessageResponse("Database is unavailable or not initialized."));
     }
 
     @ExceptionHandler(Exception.class)
