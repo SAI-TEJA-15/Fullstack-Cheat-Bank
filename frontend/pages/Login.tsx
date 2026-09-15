@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { loginUser } from '../services/apiService';
-import '../styles/auth.css';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();

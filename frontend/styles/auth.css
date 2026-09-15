@@ -136,7 +136,7 @@
 }
 
 .auth-error::before {
-  content: '⚠️';
+  content: '!';
 }
 
 /* Success Message */
@@ -154,7 +154,7 @@
 }
 
 .auth-success::before {
-  content: '✓';
+  content: 'OK';
 }
 
 /* Footer */
