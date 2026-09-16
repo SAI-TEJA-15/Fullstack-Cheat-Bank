@@ -9,6 +9,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import { CheatSheet, User } from './types';
 import Header from './components/Header';
+import Background3D from './components/Background3D';
 import { fetchApprovedCheatSheets, fetchCurrentUser, getCurrentUserFromStorage, isAuthenticated, logout } from './services/apiService';
 
 export const AppContext = React.createContext<{
@@ -107,9 +108,10 @@ const AppContent: React.FC = () => {
   const shouldShowHeader = !isAuthPage;
 
   return (
-    <div className="min-h-screen bg-background font-sans">
+    <div className="min-h-screen bg-background font-sans relative overflow-x-hidden">
+      <Background3D />
       {shouldShowHeader && <Header />}
-      <main className={!isAuthPage ? "px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8" : ""}>
+      <main className={!isAuthPage ? "relative z-10 px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8" : "relative z-10"}>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -134,4 +136,3 @@ const AppContent: React.FC = () => {
 };
 
 export default App;
-
