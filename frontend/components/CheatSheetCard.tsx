@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { CheatSheet } from '../types';
 import { AppContext } from '../App';
 import { incrementDownload } from '../services/apiService';
@@ -41,6 +41,7 @@ const categoryColors: { [key: string]: { badge: string; glow: string } } = {
 };
 
 const CheatSheetCard: React.FC<CheatSheetCardProps> = ({ sheet }) => {
+  const navigate = useNavigate();
   const { favorites, toggleFavorite } = useContext(AppContext);
   const isFavorite = favorites.includes(sheet.id);
 
@@ -49,6 +50,10 @@ const CheatSheetCard: React.FC<CheatSheetCardProps> = ({ sheet }) => {
   const [rotY, setRotY] = useState(0);
   const [glare, setGlare] = useState({ x: 50, y: 50 });
   const [isHovered, setIsHovered] = useState(false);
+
+  const handleCardClick = () => {
+    navigate(`/sheet/${sheet.id}`);
+  };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
@@ -100,10 +105,11 @@ const CheatSheetCard: React.FC<CheatSheetCardProps> = ({ sheet }) => {
 
   return (
     <div
-      className="perspective-1000 h-full"
+      className="perspective-1000 h-full cursor-pointer select-none"
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onClick={handleCardClick}
     >
       <div
         ref={cardRef}
@@ -169,10 +175,7 @@ const CheatSheetCard: React.FC<CheatSheetCardProps> = ({ sheet }) => {
         </div>
 
         {/* Card Footer */}
-        <div
-          className="px-6 py-4 bg-surface-light/30 border-t border-white/5 preserve-3d transition-transform duration-200"
-          style={{ transform: isHovered ? 'translateZ(35px)' : 'translateZ(0px)' }}
-        >
+        <div className="px-6 py-4 bg-surface-light/40 border-t border-white/5 relative z-20">
           <div className="flex justify-between items-center text-xs text-text-secondary mb-3">
             <div className="flex items-center gap-1.5 font-medium">
               <i className="fa-solid fa-circle-user text-accent/80"></i>
@@ -189,16 +192,21 @@ const CheatSheetCard: React.FC<CheatSheetCardProps> = ({ sheet }) => {
           </div>
 
           <div className="flex items-center gap-2">
-            <Link
-              to={`/sheet/${sheet.id}`}
-              className="flex-1 text-center py-2 px-3 rounded-xl bg-gradient-to-r from-primary to-purple-600 hover:from-primary-hover hover:to-purple-700 text-white font-semibold text-xs transition-all shadow-md shadow-primary/20 hover:shadow-primary/40 active:scale-95"
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/sheet/${sheet.id}`);
+              }}
+              className="relative z-40 flex-1 text-center py-2 px-3 rounded-xl bg-gradient-to-r from-primary to-purple-600 hover:from-primary-hover hover:to-purple-700 text-white font-semibold text-xs transition-all shadow-md shadow-primary/20 hover:shadow-primary/40 active:scale-95 cursor-pointer"
             >
               Explore Sheet
-            </Link>
+            </button>
             <button
+              type="button"
               onClick={handleFavoriteClick}
               aria-label="Favorite"
-              className={`p-2 rounded-xl border transition-all ${
+              className={`relative z-40 p-2 rounded-xl border transition-all cursor-pointer ${
                 isFavorite
                   ? 'text-pink-500 bg-pink-500/15 border-pink-500/30 shadow-sm shadow-pink-500/20'
                   : 'text-text-secondary bg-surface-light/60 border-white/5 hover:text-white hover:bg-surface-light'
@@ -207,9 +215,10 @@ const CheatSheetCard: React.FC<CheatSheetCardProps> = ({ sheet }) => {
               <i className="fa-solid fa-heart text-xs"></i>
             </button>
             <button
+              type="button"
               onClick={handleDownloadClick}
               aria-label="Download PDF"
-              className="p-2 rounded-xl text-text-secondary bg-surface-light/60 border border-white/5 hover:text-white hover:bg-surface-light transition-all"
+              className="relative z-40 p-2 rounded-xl text-text-secondary bg-surface-light/60 border border-white/5 hover:text-white hover:bg-surface-light transition-all cursor-pointer"
             >
               <i className="fa-solid fa-download text-xs"></i>
             </button>

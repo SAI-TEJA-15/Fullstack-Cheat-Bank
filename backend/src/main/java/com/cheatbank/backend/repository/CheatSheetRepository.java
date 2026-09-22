@@ -10,4 +10,8 @@ public interface CheatSheetRepository extends JpaRepository<CheatSheet, Long> {
     List<CheatSheet> findByStatusOrderByCreatedAtDesc(CheatSheetStatus status);
 
     List<CheatSheet> findByStatusOrderByCreatedAtAsc(CheatSheetStatus status);
+
+    boolean existsByTitle(String title);
+
+    java.util.Optional<CheatSheet> findByTitle(String title);
 }
