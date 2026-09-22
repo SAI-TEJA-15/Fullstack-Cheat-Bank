@@ -116,7 +116,7 @@ const AppContent: React.FC = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           
-          <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+          <Route path="/" element={<Home />} />
           <Route path="/sheet/:id" element={<ProtectedRoute><CheatSheetDetail /></ProtectedRoute>} />
           <Route path="/add" element={<ProtectedRoute><AddCheatSheet /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>} />

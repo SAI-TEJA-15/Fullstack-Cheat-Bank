@@ -1,8 +1,10 @@
 import React, { useState, useMemo, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CheatSheetCard from '../components/CheatSheetCard';
 import Hero3DCard from '../components/Hero3DCard';
 import { categories, Category } from '../types';
 import { AppContext } from '../App';
+import { isAuthenticated } from '../services/apiService';
 
 interface StatCardProps {
   icon: string;
@@ -47,6 +49,7 @@ const StatCard: React.FC<StatCardProps> = ({ icon, value, label, accentGradient,
 };
 
 const Home: React.FC = () => {
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState<Category>('All Categories');
   const [searchTerm, setSearchTerm] = useState('');
   const { favorites, cheatSheets, currentUser } = useContext(AppContext);
@@ -74,6 +77,10 @@ const Home: React.FC = () => {
   };
 
   const handleFavoritesClick = () => {
+    if (!isAuthenticated()) {
+      navigate('/login', { state: { message: 'Please sign in to view your saved favorites.' } });
+      return;
+    }
     setActiveCategory('All Categories');
     setShowFavorites(!showFavorites);
   };
@@ -115,13 +122,14 @@ const Home: React.FC = () => {
             </p>
 
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
-              <a
-                href="#cheat-sheets"
+              <button
+                type="button"
+                onClick={() => document.getElementById('cheat-sheets')?.scrollIntoView({ behavior: 'smooth' })}
                 className="px-6 py-3 rounded-xl bg-gradient-to-r from-primary to-pink-600 hover:from-primary-hover hover:to-pink-700 text-white font-semibold text-sm shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all transform hover:-translate-y-0.5 active:scale-95 flex items-center gap-2"
               >
                 <span>Browse Cheat Sheets</span>
                 <i className="fa-solid fa-arrow-down text-xs"></i>
-              </a>
+              </button>
 
               <button
                 onClick={() => {

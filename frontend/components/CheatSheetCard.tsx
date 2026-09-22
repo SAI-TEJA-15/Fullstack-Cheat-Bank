@@ -2,7 +2,7 @@ import React, { useContext, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheatSheet } from '../types';
 import { AppContext } from '../App';
-import { incrementDownload } from '../services/apiService';
+import { incrementDownload, isAuthenticated } from '../services/apiService';
 import { downloadCheatSheetAsPdf } from '../utils/pdfDownload';
 
 interface CheatSheetCardProps {
@@ -52,6 +52,10 @@ const CheatSheetCard: React.FC<CheatSheetCardProps> = ({ sheet }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleCardClick = () => {
+    if (!isAuthenticated()) {
+      navigate('/login', { state: { from: `/sheet/${sheet.id}`, message: 'Please sign in to view this cheat sheet.' } });
+      return;
+    }
     navigate(`/sheet/${sheet.id}`);
   };
 
@@ -86,12 +90,20 @@ const CheatSheetCard: React.FC<CheatSheetCardProps> = ({ sheet }) => {
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!isAuthenticated()) {
+      navigate('/login', { state: { message: 'Please sign in to save cheat sheets to favorites.' } });
+      return;
+    }
     toggleFavorite(sheet.id);
   };
 
   const handleDownloadClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!isAuthenticated()) {
+      navigate('/login', { state: { from: `/sheet/${sheet.id}`, message: 'Please sign in to download cheat sheets.' } });
+      return;
+    }
     incrementDownload(sheet.id).catch(error => {
       console.error('Failed to record download:', error);
     });
@@ -196,6 +208,10 @@ const CheatSheetCard: React.FC<CheatSheetCardProps> = ({ sheet }) => {
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
+                if (!isAuthenticated()) {
+                  navigate('/login', { state: { from: `/sheet/${sheet.id}`, message: 'Please sign in to view this cheat sheet.' } });
+                  return;
+                }
                 navigate(`/sheet/${sheet.id}`);
               }}
               className="relative z-40 flex-1 text-center py-2 px-3 rounded-xl bg-gradient-to-r from-primary to-purple-600 hover:from-primary-hover hover:to-purple-700 text-white font-semibold text-xs transition-all shadow-md shadow-primary/20 hover:shadow-primary/40 active:scale-95 cursor-pointer"

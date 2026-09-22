@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { getCurrentUserFromStorage, isAuthenticated } from '../services/apiService';
 
 interface ProtectedRouteProps {
@@ -8,8 +8,16 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin = false }) => {
+  const location = useLocation();
+
   if (!isAuthenticated()) {
-    return <Navigate to="/login" replace />;
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{ from: `${location.pathname}${location.search}`, message: 'Please sign in to continue.' }}
+      />
+    );
   }
 
   const user = getCurrentUserFromStorage();

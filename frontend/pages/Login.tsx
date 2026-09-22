@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useContext, useState } from 'react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { AppContext } from '../App';
 import { loginUser } from '../services/apiService';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { setCurrentUser } = useContext(AppContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [notice] = useState((location.state as any)?.message || '');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -28,10 +32,12 @@ const Login: React.FC = () => {
     }
 
     try {
-      await loginUser({ email, password });
+      const response = await loginUser({ email, password });
+      setCurrentUser(response.user);
 
       setLoading(false);
-      navigate('/');
+      const from = (location.state as { from?: string } | null)?.from || '/';
+      navigate(from);
     } catch (err: any) {
       setError(err.message || 'Login failed. Please try again.');
       setLoading(false);
