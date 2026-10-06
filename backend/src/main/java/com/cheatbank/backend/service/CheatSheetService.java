@@ -123,6 +123,11 @@ public class CheatSheetService {
         }
     }
 
+    public void delete(Long id) {
+        CheatSheet cheatSheet = findById(id);
+        cheatSheetRepository.delete(cheatSheet);
+    }
+
     private CheatSheet findById(Long id) {
         return cheatSheetRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Cheat sheet not found."));

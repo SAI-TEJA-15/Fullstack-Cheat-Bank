@@ -7,7 +7,7 @@ import { downloadCheatSheetAsPdf } from '../utils/pdfDownload';
 const CheatSheetDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { cheatSheets, favorites, toggleFavorite } = useContext(AppContext);
+    const { cheatSheets, favorites, toggleFavorite, currentUser } = useContext(AppContext);
 
     const sheet = cheatSheets.find(s => s.id === parseInt(id || ''));
 
@@ -37,8 +37,63 @@ const CheatSheetDetail: React.FC = () => {
         .filter(s => s.category === sheet.category && s.id !== sheet.id)
         .slice(0, 3);
         
-    const handleActionClick = (action: string) => {
-        alert(`${action} is not implemented.`);
+    const handleCopyContent = async () => {
+        try {
+            const textContent = sheet.content
+                .map(section => {
+                    return `${section.title}\n${section.commands.map(cmd => `${cmd.command} - ${cmd.description}`).join('\n')}`;
+                })
+                .join('\n\n');
+            await navigator.clipboard.writeText(textContent);
+            alert('Content copied to clipboard!');
+        } catch (err) {
+            console.error('Failed to copy: ', err);
+            alert('Failed to copy content');
+        }
+    };
+
+    const handleShare = async () => {
+        try {
+            if (navigator.share) {
+                await navigator.share({
+                    title: sheet.title,
+                    text: sheet.description,
+                    url: window.location.href
+                });
+            } else {
+                // Fallback: copy URL to clipboard
+                await navigator.clipboard.writeText(window.location.href);
+                alert('Page URL copied to clipboard (Web Share API not supported)');
+            }
+        } catch (err) {
+            console.error('Failed to share: ', err);
+            alert('Failed to share');
+        }
+    };
+
+    const handleDeleteCheatSheet = async (id: number) => {
+        if (!window.confirm('Are you sure you want to delete this cheat sheet? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/cheat-sheets/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            alert('Cheat sheet deleted successfully!');
+            navigate('/');
+        } catch (error) {
+            console.error('Error deleting cheat sheet:', error);
+            alert('Failed to delete cheat sheet. Please try again.');
+        }
     };
 
     return (
@@ -60,10 +115,10 @@ const CheatSheetDetail: React.FC = () => {
                             }} className="bg-primary hover:bg-primary-hover text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors">
                                 <i className="fa-solid fa-file-pdf"></i> Download PDF
                             </button>
-                            <button onClick={() => handleActionClick('Copy Content')} className="bg-surface hover:bg-surface-light text-text-primary font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors">
+                            <button onClick={handleCopyContent} className="bg-surface hover:bg-surface-light text-text-primary font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors">
                                 <i className="fa-solid fa-copy"></i> Copy Content
                             </button>
-                             <button onClick={() => handleActionClick('Share')} className="bg-surface hover:bg-surface-light text-text-primary font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors">
+                            <button onClick={handleShare} className="bg-surface hover:bg-surface-light text-text-primary font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors">
                                 <i className="fa-solid fa-share-alt"></i> Share
                             </button>
                         </div>
@@ -81,9 +136,11 @@ const CheatSheetDetail: React.FC = () => {
                            <button onClick={() => toggleFavorite(sheet.id)} className={`flex items-center gap-2 text-sm font-medium ${isFavorite ? 'text-pink-400' : 'text-text-secondary hover:text-white'}`}>
                                 <i className={`fa-solid fa-heart ${isFavorite ? 'text-pink-500' : ''}`}></i> {isFavorite ? 'Favorited' : 'Favorite'}
                             </button>
-                            <button onClick={() => handleActionClick('Delete')} className="flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-red-500">
-                                <i className="fa-solid fa-trash"></i> Delete
-                            </button>
+                            {currentUser && currentUser.role === 'ADMIN' && (
+                                <button onClick={() => handleDeleteCheatSheet(sheet.id)} className="flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-red-500">
+                                    <i className="fa-solid fa-trash"></i> Delete
+                                </button>
+                            )}
                         </div>
                     </div>
                     

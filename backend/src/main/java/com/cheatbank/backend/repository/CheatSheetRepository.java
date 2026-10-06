@@ -14,4 +14,6 @@ public interface CheatSheetRepository extends JpaRepository<CheatSheet, Long> {
     boolean existsByTitle(String title);
 
     java.util.Optional<CheatSheet> findByTitle(String title);
+
+    void delete(CheatSheet cheatSheet);
 }

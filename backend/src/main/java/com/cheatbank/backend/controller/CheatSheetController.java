@@ -65,6 +65,13 @@ public class CheatSheetController {
         return ResponseEntity.ok(cheatSheetService.reject(id));
     }
 
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<MessageResponse> deleteCheatSheet(@PathVariable Long id) {
+        cheatSheetService.delete(id);
+        return ResponseEntity.ok(new MessageResponse("Cheat sheet deleted successfully."));
+    }
+
     @PostMapping("/{id}/view")
     public ResponseEntity<Void> incrementView(@PathVariable Long id) {
         cheatSheetService.incrementView(id);
