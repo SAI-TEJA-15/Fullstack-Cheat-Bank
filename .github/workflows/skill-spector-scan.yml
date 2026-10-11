@@ -1,0 +1,21 @@
+name: SkillSpector Scan
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run SkillSpector Scan
+        run: |
+          # Using the Docker container provided by SkillSpector
+          docker run --rm -v ${{ github.workspace }}:/workspace nvidia/skillspector:latest scan /workspace
